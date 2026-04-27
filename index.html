@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Carotek AI Assistant — Powered by BotlifeAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:    #1A2744;
+    --navy-d:  #0F1C35;
+    --teal:    #0D7A6F;
+    --teal-l:  #17A99A;
+    --teal-xl: #5ECFC6;
+    --white:   #FFFFFF;
+    --off:     #F4F7F9;
+    --slate:   #64748B;
+    --slate-l: #94A3B8;
+    --border:  rgba(0,0,0,0.08);
+    --radius:  14px;
+    --font-serif: 'DM Serif Display', Georgia, serif;
+    --font-sans:  'DM Sans', system-ui, sans-serif;
+  }
+
+  html, body { height: 100%; font-family: var(--font-sans); background: var(--off); color: var(--navy); }
+
+  /* ── Layout ── */
+  .page { display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* ── Header ── */
+  header {
+    background: var(--navy);
+    padding: 0 32px;
+    display: flex; align-items: center; gap: 20px;
+    height: 64px; flex-shrink: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .header-logo {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--teal);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-serif); font-size: 18px; color: white; font-weight: 400;
+  }
+  .header-brand { flex: 1; }
+  .header-brand .name {
+    font-family: var(--font-serif); font-size: 18px; color: white; letter-spacing: 0.01em;
+  }
+  .header-brand .sub { font-size: 11px; color: var(--teal-l); margin-top: 1px; letter-spacing: 0.03em; }
+  .header-badge {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+    background: rgba(13,122,111,0.18); color: var(--teal-xl);
+    border: 1px solid rgba(13,122,111,0.35);
+    padding: 4px 12px; border-radius: 20px; text-transform: uppercase;
+  }
+  .header-powered { font-size: 11px; color: var(--slate-l); }
+  .header-powered span { color: var(--teal-l); }
+
+  /* ── Main ── */
+  main { flex: 1; display: flex; gap: 0; max-width: 1200px; width: 100%; margin: 0 auto; padding: 28px 24px; }
+
+  /* ── Sidebar ── */
+  .sidebar { width: 260px; flex-shrink: 0; margin-right: 24px; display: flex; flex-direction: column; gap: 16px; }
+  .sidebar-card {
+    background: white; border-radius: var(--radius);
+    border: 1px solid var(--border); padding: 20px;
+  }
+  .sidebar-card h3 { font-family: var(--font-serif); font-size: 15px; color: var(--navy); margin-bottom: 12px; }
+  .sidebar-card p { font-size: 12.5px; color: var(--slate); line-height: 1.6; }
+  .topic-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .topic-list li {
+    font-size: 12px; color: var(--slate);
+    padding: 7px 10px; border-radius: 8px;
+    background: var(--off); display: flex; align-items: center; gap: 8px;
+    cursor: pointer; transition: background 0.15s, color 0.15s;
+  }
+  .topic-list li:hover { background: #E6F4F2; color: var(--teal); }
+  .topic-list li .icon { font-size: 14px; flex-shrink: 0; }
+  .territory-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .territory-tag {
+    font-size: 11px; font-weight: 600; padding: 3px 10px;
+    background: var(--navy); color: white; border-radius: 20px;
+  }
+  .contact-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .contact-row a { font-size: 12px; color: var(--teal); text-decoration: none; font-weight: 500; }
+  .contact-row a:hover { text-decoration: underline; }
+
+  /* ── Chat panel ── */
+  .chat-panel {
+    flex: 1; display: flex; flex-direction: column;
+    background: white; border-radius: var(--radius); border: 1px solid var(--border);
+    overflow: hidden; min-height: 600px;
+  }
+  .chat-topbar {
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+  }
+  .online-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal-l); flex-shrink: 0; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .chat-topbar-label { font-size: 13px; color: var(--slate); }
+  .chat-topbar-label strong { color: var(--navy); }
+  .reset-btn {
+    margin-left: auto; font-size: 11.5px; color: var(--slate-l);
+    background: none; border: 1px solid var(--border); border-radius: 8px;
+    padding: 5px 12px; cursor: pointer; font-family: var(--font-sans); transition: all 0.15s;
+  }
+  .reset-btn:hover { border-color: var(--teal); color: var(--teal); background: #E6F4F2; }
+
+  /* ── Messages ── */
+  #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; background: #FAFBFC; }
+  #messages::-webkit-scrollbar { width: 4px; }
+  #messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .msg { display: flex; gap: 10px; max-width: 82%; animation: fadeUp 0.2s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+  .msg.user { align-self: flex-end; flex-direction: row-reverse; }
+
+  .av {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; margin-top: 2px;
+  }
+  .msg.bot .av { background: var(--navy); color: var(--teal-l); }
+  .msg.user .av { background: var(--teal); color: white; }
+
+  .bubble {
+    padding: 11px 15px; font-size: 13.5px; line-height: 1.65;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .msg.bot .bubble {
+    background: white; border: 1px solid var(--border);
+    border-radius: 4px 16px 16px 16px; color: var(--navy);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .msg.user .bubble {
+    background: var(--navy); color: white;
+    border-radius: 16px 4px 16px 16px;
+  }
+
+  /* typing */
+  .typing-wrap { display: flex; gap: 10px; animation: fadeUp 0.2s ease; }
+  .typing-wrap .av { background: var(--navy); color: var(--teal-l); }
+  .typing-bub {
+    background: white; border: 1px solid var(--border);
+    border-radius: 4px 16px 16px 16px;
+    padding: 14px 18px; display: flex; gap: 5px; align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .typing-bub span {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--slate-l); display: block;
+    animation: blink 1.3s infinite;
+  }
+  .typing-bub span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-bub span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100%{opacity:.2} 40%{opacity:1} }
+
+  /* ── Chips ── */
+  #chips {
+    padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 7px;
+    border-top: 1px solid var(--border); flex-shrink: 0; background: white;
+  }
+  .chip {
+    font-size: 11.5px; font-family: var(--font-sans);
+    padding: 6px 13px; border-radius: 20px;
+    border: 1px solid var(--border); background: var(--off);
+    color: var(--slate); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .chip:hover { background: #E6F4F2; border-color: var(--teal); color: var(--teal); }
+
+  /* ── Input row ── */
+  #input-row {
+    display: flex; gap: 10px; padding: 14px 16px;
+    border-top: 1px solid var(--border); flex-shrink: 0; background: white;
+    align-items: flex-end;
+  }
+  #inp {
+    flex: 1; resize: none; border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 14px; font-size: 13.5px; font-family: var(--font-sans);
+    color: var(--navy); background: var(--off); min-height: 42px; max-height: 110px;
+    line-height: 1.45; transition: border-color 0.15s;
+  }
+  #inp:focus { outline: none; border-color: var(--teal); background: white; }
+  #inp::placeholder { color: var(--slate-l); }
+
+  #send {
+    width: 42px; height: 42px; border-radius: 50%; background: var(--navy);
+    border: none; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0; transition: background 0.15s, transform 0.1s;
+  }
+  #send:hover { background: var(--teal); }
+  #send:active { transform: scale(0.94); }
+  #send:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+  #send svg { width: 18px; height: 18px; fill: white; }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center; padding: 14px 24px;
+    font-size: 11px; color: var(--slate-l);
+    border-top: 1px solid var(--border); background: white;
+  }
+  footer a { color: var(--teal); text-decoration: none; }
+
+  /* ── Responsive ── */
+  @media (max-width: 760px) {
+    main { flex-direction: column; padding: 16px; }
+    .sidebar { width: 100%; margin-right: 0; flex-direction: row; flex-wrap: wrap; }
+    .sidebar-card { flex: 1; min-width: 200px; }
+    header { padding: 0 16px; }
+    .header-powered { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <header>
+    <div class="header-logo">C</div>
+    <div class="header-brand">
+      <div class="name">Carotek Assistant</div>
+      <div class="sub">AI-Powered Product &amp; Service Support</div>
+    </div>
+    <div class="header-badge">Beta</div>
+    <div class="header-powered">Powered by <span>BotlifeAI</span></div>
+  </header>
+
+  <!-- Main -->
+  <main>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-card">
+        <h3>I can help with</h3>
+        <ul class="topic-list">
+          <li onclick="sendChip('What pumps do you carry?')"><span class="icon">⚙</span> Pumps &amp; Blowers</li>
+          <li onclick="sendChip('Tell me about your valve products')"><span class="icon">🔧</span> Valves &amp; Actuators</li>
+          <li onclick="sendChip('What instrumentation do you offer?')"><span class="icon">📊</span> Instrumentation</li>
+          <li onclick="sendChip('Can you build custom process skids?')"><span class="icon">🏭</span> Custom Fabrication</li>
+          <li onclick="sendChip('What services do you provide?')"><span class="icon">🛠</span> Services &amp; Repair</li>
+          <li onclick="sendChip('What industries do you serve?')"><span class="icon">🏢</span> Industries</li>
+          <li onclick="sendChip('Who are your key manufacturers?')"><span class="icon">🤝</span> Manufacturers</li>
+          <li onclick="sendChip('How do I request a quote?')"><span class="icon">📋</span> Get a Quote</li>
+        </ul>
+      </div>
+
+      <div class="sidebar-card">
+        <h3>Territory</h3>
+        <p>Carotek serves the Southeast with field-based account managers.</p>
+        <div class="territory-list">
+          <span class="territory-tag">NC</span>
+          <span class="territory-tag">SC</span>
+          <span class="territory-tag">GA</span>
+          <span class="territory-tag">TN</span>
+          <span class="territory-tag">VA</span>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <h3>Contact Carotek</h3>
+        <p>For quotes, custom projects, or to reach an account manager:</p>
+        <div class="contact-row">
+          <span>🌐</span><a href="https://www.carotek.com" target="_blank">carotek.com</a>
+        </div>
+        <div class="contact-row" style="margin-top:6px;">
+          <span>📍</span><span style="font-size:12px;color:var(--slate);">Matthews, NC (Charlotte)</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Chat -->
+    <div class="chat-panel">
+      <div class="chat-topbar">
+        <div class="online-dot"></div>
+        <div class="chat-topbar-label"><strong>Carotek AI Assistant</strong> — Ask me anything about our products &amp; services</div>
+        <button class="reset-btn" onclick="resetChat()">New conversation</button>
+      </div>
+
+      <div id="messages"></div>
+
+      <div id="chips">
+        <div class="chip" onclick="sendChip(this.textContent)">What pumps do you carry?</div>
+        <div class="chip" onclick="sendChip(this.textContent)">Do you offer 24/7 service?</div>
+        <div class="chip" onclick="sendChip(this.textContent)">What states do you cover?</div>
+        <div class="chip" onclick="sendChip(this.textContent)">Can you build a custom skid?</div>
+        <div class="chip" onclick="sendChip(this.textContent)">Are you a Grundfos partner?</div>
+        <div class="chip" onclick="sendChip(this.textContent)">How do I get a quote?</div>
+      </div>
+
+      <div id="input-row">
+        <textarea id="inp" placeholder="Ask about Carotek products, services, territories, or manufacturers..." rows="1"></textarea>
+        <button id="send" onclick="send()">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    This is a beta demo built by <a href="https://www.botlifeai.com" target="_blank">BotlifeAI</a> for Carotek, Inc.
+    &nbsp;·&nbsp; Powered by Anthropic Claude &nbsp;·&nbsp;
+    <a href="https://www.carotek.com" target="_blank">carotek.com</a>
+  </footer>
+
+</div>
+
+<script>
+const SYSTEM = `You are the Carotek AI Assistant — a knowledgeable, professional virtual assistant for Carotek, Inc., a leading industrial process equipment distributor headquartered in Matthews, NC (Charlotte suburb), founded in 1965.
+
+ABOUT CAROTEK:
+- Serves industrial, commercial, and municipal markets in NC, SC, TN, GA, and VA
+- 150+ employees, 80,000 sq ft HQ at 700 Sam Newell Road, Matthews NC 28105
+- Represents 85+ manufacturers as authorized distributor, rep, and repair center
+- 60 years in business
+
+PRODUCTS:
+1. Pumps & Blowers — centrifugal, AODD, submersible, peristaltic, positive displacement pumps; blowers, vacuum pumps. Key brands: Grundfos (authorized service partner NC/SC/VA), Wilden/PSG, Roto Pumps
+2. Valves & Actuators — control valves, knife gate, ball, butterfly, check valves, valve automation units. Key brands: DeZURIK, Flowserve/Valtek, Kinetrol, EIM
+3. Instrumentation & Sensors — flow meters, pressure transmitters, level measurement, temperature sensors, analytical instruments, diaphragm seals. Key brands: Endress+Hauser, Ashcroft, Pepperl+Fuchs, Vaisala
+4. IIoT & Automation — industrial IoT sensors, process monitoring, control systems
+5. Steam & Hydronics — steam equipment, hydronic systems, thermal solutions
+6. Heat Exchangers
+7. Filtration — process filtration systems
+8. Municipal Products — water/wastewater treatment. Brands: Smith & Loveless, Hydrovision, Earthtek, General Rubber, Plasti-Fab, Trumbull, Syneco
+9. Seal Pots — manufactured in-house in Matthews, NC
+10. Process Skids & Control Panels — custom engineered: pump skids, blower skids, chemical injection, filtration, blending skids, electrical control panels, robotics integration. Can cut facility costs up to 35%.
+
+SERVICES:
+- 24/7 Field Services (emergency and scheduled on-site)
+- Pump Repair & Overhaul (certified in-shop and on-site)
+- Instrument Calibration
+- Valve Automation & Repair
+- Manufacturer-authorized Product Training
+- Energy Savings Audits for process systems
+- Reliability Programs & Maintenance Plans
+- Grundfos warranty repairs (no voiding of warranty)
+
+INDUSTRIES SERVED: Chemical, Food & Beverage, Water & Wastewater, Municipal, Pharmaceutical, Pulp & Paper, Oil & Gas, HVAC, Steel, Natural Gas, Nuclear, Petroleum Refining, Air Conditioning
+
+TERRITORY: NC, SC, TN (Central & Eastern), GA, VA. Account managers are field-based and travel their full state.
+
+KEY FAQs:
+- Carotek is an authorized distributor/rep — not a direct manufacturer
+- For products/service outside their territory, contact the manufacturer directly
+- Request quotes via carotek.com contact form or through a local account manager
+- Grundfos ASP: passed stringent third-party audit; authorized to perform warranty work
+
+TONE: Be warm, professional, and concise. Use short paragraphs or brief bullet lists where it aids clarity. For pricing, availability, or application-specific questions, offer to connect them with a Carotek account manager via carotek.com. Never make up product specs or prices.`;
+
+let history = [];
+let busy = false;
+
+const msgsEl = document.getElementById('messages');
+const inpEl  = document.getElementById('inp');
+const sendBtn = document.getElementById('send');
+
+// Welcome message
+addMsg('bot', "Hi there! I'm the Carotek AI Assistant, here to help you with questions about our products, services, and capabilities.\n\nI can help with pumps, valves, instrumentation, custom fabrication, service requests, and more. What can I help you with today?");
+
+inpEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+});
+inpEl.addEventListener('input', () => {
+  inpEl.style.height = 'auto';
+  inpEl.style.height = Math.min(inpEl.scrollHeight, 110) + 'px';
+});
+
+function addMsg(role, text) {
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ' + role;
+  const av = document.createElement('div');
+  av.className = 'av';
+  av.textContent = role === 'user' ? 'You' : 'C';
+  const bub = document.createElement('div');
+  bub.className = 'bubble';
+  bub.textContent = text;
+  wrap.appendChild(av);
+  wrap.appendChild(bub);
+  msgsEl.appendChild(wrap);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+  return bub;
+}
+
+function showTyping() {
+  const wrap = document.createElement('div');
+  wrap.className = 'typing-wrap'; wrap.id = 'typ';
+  const av = document.createElement('div'); av.className = 'av'; av.textContent = 'C';
+  const bub = document.createElement('div'); bub.className = 'typing-bub';
+  bub.innerHTML = '<span></span><span></span><span></span>';
+  wrap.appendChild(av); wrap.appendChild(bub);
+  msgsEl.appendChild(wrap); msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+function hideTyping() { const t = document.getElementById('typ'); if (t) t.remove(); }
+
+async function send(text) {
+  const msg = (text !== undefined ? text : inpEl.value).trim();
+  if (!msg || busy) return;
+  busy = true; sendBtn.disabled = true;
+  inpEl.value = ''; inpEl.style.height = 'auto';
+
+  addMsg('user', msg);
+  history.push({ role: 'user', content: msg });
+  showTyping();
+
+  try {
+    // ── API call goes through /api/chat route (see api/chat.js) ──
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: history, system: SYSTEM })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error || 'Server error ' + res.status);
+    }
+
+    const data = await res.json();
+    const reply = data.reply || 'I had trouble generating a response — please try again.';
+    hideTyping();
+    addMsg('bot', reply);
+    history.push({ role: 'assistant', content: reply });
+
+  } catch (e) {
+    hideTyping();
+    addMsg('bot', 'Sorry, I ran into a connection issue. Please try again in a moment.');
+    console.error('Chat error:', e);
+  }
+
+  busy = false; sendBtn.disabled = false; inpEl.focus();
+}
+
+function sendChip(text) { send(text); }
+
+function resetChat() {
+  history = [];
+  msgsEl.innerHTML = '';
+  addMsg('bot', "Conversation reset! How can I help you with Carotek's products and services?");
+}
+</script>
+</body>
+</html>
