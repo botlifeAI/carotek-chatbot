@@ -369,19 +369,32 @@ inpEl.addEventListener('input', () => {
 });
 
 function addMsg(role, text) {
-  const wrap = document.createElement('div');
+ const wrap = document.createElement('div');
   wrap.className = 'msg ' + role;
   const av = document.createElement('div');
   av.className = 'av';
   av.textContent = role === 'user' ? 'You' : 'C';
   const bub = document.createElement('div');
   bub.className = 'bubble';
-  bub.textContent = text;
+  bub.innerHTML = formatText(text);
   wrap.appendChild(av);
   wrap.appendChild(bub);
   msgsEl.appendChild(wrap);
   msgsEl.scrollTop = msgsEl.scrollHeight;
-  return bub;
+}
+
+function formatText(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/^### (.*?)$/gm, '<h4 style="margin:8px 0 4px;font-size:13px;color:#1A2744;">$1</h4>')
+    .replace(/^## (.*?)$/gm, '<h3 style="margin:8px 0 4px;font-size:14px;color:#1A2744;">$1</h3>')
+    .replace(/^- (.*?)$/gm, '<li style="margin-left:16px;margin-bottom:2px;">$1</li>')
+    .replace(/(<li.*<\/li>)/gs, '<ul style="padding:4px 0;list-style:disc;">$1</ul>')
+    .replace(/\n/g, '<br/>');
 }
 
 function showTyping() {
