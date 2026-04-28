@@ -1,25 +1,16 @@
-// api/chat.js — Vercel Serverless Function
-// This keeps your Anthropic API key secure on the server side.
-// Deploy to Vercel and add ANTHROPIC_API_KEY in your project's Environment Variables.
-
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  const { messages, system } = req.body;
-
-  if (!messages || !Array.isArray(messages)) {
-    return res.status(400).json({ error: 'Invalid request body' });
-  }
-
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return res.status(500).json({ error: 'API key not configured' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages
+    const { messages, system } = req.body;
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -27,25 +18,19 @@ export default async function handler(req, res) {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-5',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 1024,
         system: system,
         messages: messages
       })
     });
 
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      return res.status(response.status).json({ error: err?.error?.message || 'Anthropic API error' });
-    }
-
     const data = await response.json();
-    const reply = data.content?.find(b => b.type === 'text')?.text || '';
-
+    const reply = data.content?.[0]?.text || 'No response generated.';
     return res.status(200).json({ reply });
 
   } catch (err) {
-    console.error('Anthropic proxy error:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error('Error:', err);
+    return res.status(500).json({ error: err.message });
   }
 }
